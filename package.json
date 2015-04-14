@@ -38,6 +38,7 @@
   },
   "devDependencies": {
     "expect.js": "^0.3.1",
+    "istanbul": "https://github.com/duereg/istanbul/archive/master.tar.gz",
     "fakeredis": "^0.3.1",
     "supertest": "^0.15.0"
   }
