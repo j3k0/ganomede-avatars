@@ -1,8 +1,8 @@
 {
-  "name": "turngame",
+  "name": "avatars",
   "version": "1.0.1",
-  "api": "turngame/v1",
-  "description": "turngame micro service",
+  "api": "avatars/v1",
+  "description": "avatars micro service",
   "private": true,
   "main": "index.js",
   "scripts": {
