@@ -34,23 +34,23 @@ API
 Will:
 
  * crop the image to be a square
- * create resized versions 512x512, 256x256, 128x128 and 64x64
- * set a `disk` shaped opacity mask over them
- * store PNG images in CouchDB as attachment (overriding any previously stored images).
+ * create resized versions 256x256, 128x128 and 64x64
+   * should keep transparency
+ * store PNG images in DB (overriding any previously stored images)
+   * (suggestion) CouchDB attachments
 
-### body [image/jpeg]
+### body [image/png]
 
 ### response [200] OK
 
-# Round thumbnail [/avatars/v1/:username/round/:radius]
+# Thumbnails [/avatars/v1/:username/size/:size]
 
     + Parameters
         + username (string) ... User to retrieve the avatar image of
-        + radius (integer) ... Disk image radius (64, 128, 256 or 256)
+        + size (integer) ... Image size (64, 128, or 256)
 
 ## Get [GET]
 
 ### response [200] OK
 
 Content-type: image/png
-
