@@ -13,9 +13,6 @@ class AvatarApi
     @authdbClient = options.authdbClient || authdb.createClient(
       host: config.authdb.host
       port: config.authdb.port)
-  
-  test: ->
-    console.log('tetet')
 
   addRoutes: (prefix, server) ->
     #
@@ -36,19 +33,21 @@ class AvatarApi
         req.params.user = account
         next()
 
+    test = (req, res, next) ->
+      res.send "test/" + req.params.token
+      next()
         
     # POST /pictures
     postAvatar = (req, res, next) =>
       body = req.body
-      avatar = body?.image
-      file = req.files[0]
-      console.log('XXXX: BODY', req.body)
-      console.log('XXXX params', req.params)
-      console.log('XXXX UPLOADED FILES', req.files)
+      res.send req.files[0]
       next()
 
-    server.post "#{prefix}/auth/:token/pictures",
-      authMiddleware, postAvatar
+    server.post "/#{prefix}/auth/:token/pictures",
+      postAvatar
+
+    server.get "/#{prefix}/auth/:token/test",
+      test
 
 module.exports =
   create: (options = {}) -> new AvatarApi(options)
