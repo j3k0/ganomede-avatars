@@ -6,14 +6,14 @@ config = require '../config'
 sendError = (err, next) ->
   log.error err
   next err
-    
+
 class AvatarApi
   constructor: (options = {}) ->
     # configure authdb client
     @authdbClient = options.authdbClient || authdb.createClient(
       host: config.authdb.host
       port: config.authdb.port)
-  
+
   test: ->
     console.log('tetet')
 
@@ -36,7 +36,7 @@ class AvatarApi
         req.params.user = account
         next()
 
-        
+
     # POST /pictures
     postAvatar = (req, res, next) =>
       body = req.body
@@ -47,9 +47,9 @@ class AvatarApi
       console.log('XXXX UPLOADED FILES', req.files)
       next()
 
-    server.post "#{prefix}/auth/:token/pictures",
+    server.post "#{prefix}/auth/:authToken/pictures",
       authMiddleware, postAvatar
 
 module.exports =
   create: (options = {}) -> new AvatarApi(options)
-            
+
