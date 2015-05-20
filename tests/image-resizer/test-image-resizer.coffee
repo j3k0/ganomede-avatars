@@ -3,7 +3,11 @@ path = require 'path'
 expect = require 'expect.js'
 ImageResizer = require '../../src/image-resizer'
 
-TEST_IMAGE_PATH = path.join(__dirname, 'Yoshi.png')
+imagePath = (size) ->
+  sizePortion = if arguments.length == 1 then "-#{size}" else ''
+  return path.join(__dirname, "#{TEST_IMAGE_NAME}#{sizePortion}.png")
+
+TEST_IMAGE_NAME = 'Yoshi'
 
 describe 'ImageResizer', () ->
   describe 'new ImageResizer()', () ->
@@ -18,7 +22,7 @@ describe 'ImageResizer', () ->
 
   describe '#resize()', () ->
     resizer = new ImageResizer(ImageResizer.RESIZERS.LWIP)
-    image = fs.readFileSync(TEST_IMAGE_PATH)
+    image = fs.readFileSync(imagePath())
 
     it 'takes in image Buffer and resizes it to a bunch of squares', (done) ->
       resizer.resize image, (err, result) ->
@@ -31,5 +35,6 @@ describe 'ImageResizer', () ->
         expect(result).to.only.have.keys(ImageResizer.SIZES.map(String))
         for size in ImageResizer.SIZES
           expect(result[size]).to.be.a(Buffer)
+          fs.writeFileSync(imagePath(size), result[size])
 
         done()

@@ -1,7 +1,27 @@
 vasync = require 'vasync'
+lwip = require 'lwip'
+log = require './log'
 
 LwipResizer = (buf, size, callback) ->
-  process.nextTick(callback.bind(null, null, new Buffer(16)))
+  lwip.open buf, 'png', (err, image) ->
+    if (err)
+      log.error 'LwipResizer: failed to open buf', {err: err}
+      return callback(err)
+
+    image.resize size, size, (err, resizedImage) ->
+      if (err)
+        log.error 'LwipResizer: failed to resize',
+          err: err
+          size: size
+        return callback(err)
+
+      resizedImage.toBuffer 'png', (err, resizedBuf) ->
+        if (err)
+          log.error 'LwipResizer: failed to toBuffer() resized image',
+            err: err
+          return callback(err)
+
+        callback(null, resizedBuf)
 
 class ImageResizer
   constructor: (resizer) ->
@@ -16,7 +36,8 @@ class ImageResizer
       inputs: ImageResizer.SIZES
     , (err, results) ->
       if (err)
-        console.error('Failed to resize', err)
+        log.error 'Failed to resize',
+          err: err
         return callback(err)
 
       ret = {}
