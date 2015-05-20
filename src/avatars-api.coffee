@@ -7,15 +7,21 @@ DB = require "./couchdb"
 sendError = (err, next) ->
   log.error err
   next err
-    
+
 class AvatarApi
   constructor: (options = {}) ->
     # configure authdb client
     @authdbClient = options.authdbClient || authdb.createClient(
       host: config.authdb.host
       port: config.authdb.port)
+<<<<<<< HEAD
     DB.initialize config.couch, (err, ldb) =>
       @db = ldb
+=======
+
+  test: ->
+    console.log('tetet')
+>>>>>>> 0bb25d6cec89dc6967a7f1a7931cbff34d03ae65
 
   addRoutes: (prefix, server) ->
     #
@@ -35,7 +41,7 @@ class AvatarApi
 
         req.params.user = account
         next()
-        
+
     # POST /pictures
     postAvatar = (req, res, next) =>
       callback = (err, result) =>
@@ -64,4 +70,4 @@ class AvatarApi
 
 module.exports =
   create: (options = {}) -> new AvatarApi(options)
-            
+
