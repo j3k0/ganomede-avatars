@@ -12,7 +12,7 @@ describe "avatar-api", ->
 
   it "should have post and get routes", ->
     assert.ok server.routes.post["/users/auth/:token/pictures"]
-    assert.ok server.routes.get["/users/auth/:token/test"]
+    assert.ok server.routes.get["/users/:username/size/:size"]
 
   ###it "should reply to a ping with a pong", ->
     server.request "get", "/users/auth/:token/pictures", params: token: "pop"

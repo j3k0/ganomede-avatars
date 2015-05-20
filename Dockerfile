@@ -16,6 +16,7 @@ COPY Makefile /home/app/code/Makefile
 COPY index.js /home/app/code/index.js
 COPY tests /home/app/code/tests
 COPY src /home/app/code/src
+COPY config.js /home/app/code/config.js
 
 USER root
 RUN chown -R app /home/app

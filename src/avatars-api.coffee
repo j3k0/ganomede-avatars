@@ -2,6 +2,7 @@ log = require "./log"
 authdb = require "authdb"
 restify = require "restify"
 config = require '../config'
+DB = require "./couchdb"
 
 sendError = (err, next) ->
   log.error err
@@ -13,6 +14,8 @@ class AvatarApi
     @authdbClient = options.authdbClient || authdb.createClient(
       host: config.authdb.host
       port: config.authdb.port)
+    DB.initialize config.couch, (err, ldb) =>
+      @db = ldb
 
   addRoutes: (prefix, server) ->
     #
@@ -32,22 +35,32 @@ class AvatarApi
 
         req.params.user = account
         next()
-
-    test = (req, res, next) ->
-      res.send "test/" + req.params.token
-      next()
         
     # POST /pictures
     postAvatar = (req, res, next) =>
-      body = req.body
-      res.send req.files[0]
+      callback = (err, result) =>
+        res.send result
+
+      req.pipe (@db.insertAttach req.params.token,
+        'original.png',
+        null,
+        'image/png',
+        callback)
+
+      next()
+
+    getThumbnail = (req, res, next) =>
+      username = req.params.username
+      size = req.params.size
+      res.setHeader 'content-type', 'image/png'
+      @db.getAttach username, "original.png", res
       next()
 
     server.post "/#{prefix}/auth/:token/pictures",
       postAvatar
 
-    server.get "/#{prefix}/auth/:token/test",
-      test
+    server.get "/#{prefix}/:username/size/:size",
+      getThumbnail
 
 module.exports =
   create: (options = {}) -> new AvatarApi(options)
