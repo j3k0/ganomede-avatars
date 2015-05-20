@@ -24,7 +24,8 @@ describe 'ImageResizer', () ->
     resizer = new ImageResizer(ImageResizer.RESIZERS.LWIP)
     image = fs.readFileSync(imagePath())
 
-    it 'takes in image Buffer and resizes it to a bunch of squares', (done) ->
+    it 'takes in an image Buffer and resizes it to square images
+        of sizes defined in ImageResizer.SIZES', (done) ->
       resizer.resize image, (err, result) ->
         expect(err).to.be(null)
 
