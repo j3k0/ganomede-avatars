@@ -49,31 +49,13 @@ class DB
     @db.insert.apply(@db, args)
 
   # Saves doc to couch
-  insertAttach: (doc, imageName, data, mimeType, callback) ->
-    cb = (err, result, headers) =>
-      if (err)
-        @log.error 'Failed to save doc to Couch',
-          err: err
-          doc: doc
-          imageName: imageName
-          result: result
-          headers: headers
-
-        return callback(err, result)
-
-      callback(null, result)
-
-    @db.get doc,
-      { revs_info: true },
-      (err, body) =>
-        if body
-          @db.attachment.insert doc, imageName, data, mimeType,
-          {rev: body._rev}, cb
-        else
-          @db.attachment.insert doc, imageName, data, mimeType, cb
-
-  getAttach: (doc, imageName, res) ->
-    @db.attachment.get(doc, imageName).pipe(res)
+  createAttachmentStream: (doc, imageName, data, mimeType, callback) ->
+    @db.get doc, { revs_info: true }, (err, body) =>
+      if body
+        callback @db.attachment.insert doc, imageName, data, mimeType,
+          {rev: body._rev}
+      else
+        callback @db.attachment.insert doc, imageName, data, mimeType
 
   # Lists challenges where `challenge.type == @type`.
   # (views.challenges)
@@ -88,7 +70,7 @@ class DB
     if arguments.length == 1
       callback = options
       options = {}
-  
+
     before = timestamp(options.before)
     qs = {}
     for own k, v of options

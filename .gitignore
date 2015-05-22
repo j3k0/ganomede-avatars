@@ -4,3 +4,4 @@ doc/
 # Ignore test files from image-resizer tests
 # (original `git add`ed manually).
 tests/image-resizer/*.png
+tests/original.png

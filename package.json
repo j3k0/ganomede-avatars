@@ -26,6 +26,7 @@
     "mocha": "^2.0.1",
     "nano": "^6.1.2",
     "redis": "^0.12.1",
+    "request": "^2.55.0",
     "restify": "^2.8.3",
     "vasync": "^1.6.2"
   },
@@ -40,8 +41,10 @@
   },
   "devDependencies": {
     "expect.js": "^0.3.1",
-    "istanbul": "https://github.com/duereg/istanbul/archive/master.tar.gz",
     "fakeredis": "^0.3.1",
+    "istanbul": "https://github.com/duereg/istanbul/archive/master.tar.gz",
+    "memdown": "^1.0.0",
+    "pouchdb-server": "^0.6.6",
     "supertest": "^0.15.0"
   }
 }

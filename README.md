@@ -43,11 +43,11 @@ Will:
 
 ### response [200] OK
 
-# Thumbnails [/avatars/v1/:username/size/:size]
+# Thumbnails [/avatars/v1/:username/:size]
 
     + Parameters
         + username (string) ... User to retrieve the avatar image of
-        + size (integer) ... Image size (64, 128, or 256)
+        + size (name) ... Image size (64.png, 128.png, or 256.png)
 
 ## Get [GET]
 

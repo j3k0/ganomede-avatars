@@ -8,7 +8,7 @@ module.exports = {
    couch: {
     serverUri: url.format({
       protocol: 'http',
-      hostname: process.env.COUCH_AVATARS_PORT_5984_TCP_ADDR || 'localhost' || '172.17.0.2' ,
+      hostname: process.env.COUCH_AVATARS_PORT_5984_TCP_ADDR || 'localhost',
       port: +process.env.COUCH_AVATARS_PORT_5984_TCP_PORT || 5984
     }),
 
