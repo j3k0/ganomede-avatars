@@ -34,20 +34,21 @@ after (done) ->
 describe 'POST ' + endpoint('/auth/:token/pictures'), () ->
   it 'send avatar image to server and reply with Ok', (done) ->
     go()
-      .post endpoint('/auth/:username/pictures')
+      .post endpoint('/auth/:token/pictures')
       .set('Content-Type', 'multipart/form-data; boundary="' + boundary + '"')
-      .send('--' + boundary + br)
-      .send('Content-Disposition: form-data; name="image"; filename="'+
-        filename + '"' + br)
-      .send('Content-Type: image/png' + br)
-      .send(br)
-      .send(fs.readFileSync(filename))
-      # .send('--' + boundary + br)
-      # .send('Content-Disposition: form-data; name="myJson"' + br)
-      # .send('Content-Type: application/json' + br)
-      # .send(br)
-      # .send user:{ username: "test"}
-      .send(br + '--' +  boundary + '--')
+      .send('--' + boundary + br +
+        'Content-Disposition: form-data; name="username"' + br +
+        'Content-Type: application/json' + br +
+        br +
+        'test' +
+        br +
+        '--' + boundary + br + br +
+        'Content-Disposition: form-data; name="image"; filename="'+
+        filename + '"' + br +
+        'Content-Type: image/png' + br +
+        br +
+        fs.readFileSync(filename) +
+        br + '--' +  boundary + '--')
       .expect 200
       .end (err, res) ->
         console.log res.body

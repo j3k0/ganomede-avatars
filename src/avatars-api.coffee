@@ -40,7 +40,6 @@ class AvatarApi
     postAvatar = (req, res, next) =>
       callback = (err, result) =>
         res.send result
-
       req.pipe (@db.insertAttach req.params.username,
         'original.png',
         null,
@@ -56,7 +55,7 @@ class AvatarApi
       @db.getAttach username, "original.png", res
       next()
 
-    server.post "/#{prefix}/auth/:username/pictures",
+    server.post "/#{prefix}/auth/:token/pictures",
       postAvatar
 
     server.get "/#{prefix}/:username/size/:size",
