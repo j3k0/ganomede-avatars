@@ -45,7 +45,10 @@ class DB
         # http://docs.couchdb.org/en/latest/api/document/common.html
         # The ETag header shows the current revision for the
         # requested document.
-        callback null, headers?.etag
+        if (headers?.etag)
+          callback null, headers.etag.replace(/"/g, '')
+        else
+          callback null
 
   # Saves doc to couch
   insert: (doc, customId, callback) ->
@@ -69,7 +72,7 @@ class DB
     @db.head doc, (err, body, headers) =>
       if headers.etag
         callback @db.attachment.insert doc, imageName, data, mimeType,
-          {rev: headers.etag}
+          {rev: headers.etag.replace(/"/g, '')}
       else
         callback @db.attachment.insert doc, imageName, data, mimeType
 
@@ -90,7 +93,7 @@ class DB
       (cb) ->
         log.info "get initial rev"
         db.head id, (err, body, headers) ->
-          cb null, rev:headers?.etag
+          cb null, rev:headers?.etag?.replace(/"/g, '')
       (initialBody, cb) ->
         vasync.waterfall((attachments.map (attachment) ->
           return (body, cb) ->
@@ -122,7 +125,7 @@ class DB
     @db.head id, (err, body, headers) =>
       if headers.etag
         @db.attachment.insert id, attachment.name, attachment.data,
-          attachment.content_type, {rev:headers.etag}, callback
+          attachment.content_type, {rev:headers.etag.replace(/"/g,'')}, callback
       else
         @db.attachment.insert id, attachment.name, attachment.data,
           attachment.content_type, callback

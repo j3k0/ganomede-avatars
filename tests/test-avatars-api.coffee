@@ -40,8 +40,17 @@ describe 'Avatars API', () ->
 
   describe 'POST ' + endpoint('/auth/:token/pictures'), () ->
 
-    it 'send avatar image to server and reply with Ok', (done) ->
-      @timeout 10000
+    it 'handles image upload', (done) ->
+      go()
+        .post endpoint('/auth/alice-token/pictures')
+        .attach('avatar', filename)
+        .expect 200
+        .end (err, res) ->
+          expect(err).to.be(null)
+          expect(res.body).to.be.an(Object)
+          done()
+
+    it 'allows to replace the picture', (done) ->
       go()
         .post endpoint('/auth/alice-token/pictures')
         .attach('avatar', filename)
