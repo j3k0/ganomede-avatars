@@ -15,7 +15,9 @@ LwipResizer = (buf, size, callback) ->
           size: size
         return callback(err)
 
-      resizedImage.toBuffer 'png', (err, resizedBuf) ->
+      resizedImage.toBuffer 'png', {
+        "compression": "high"
+      }, (err, resizedBuf) ->
         if (err)
           log.error 'LwipResizer: failed to toBuffer() resized image',
             err: err

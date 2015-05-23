@@ -1,6 +1,6 @@
 nano = require 'nano'
 vasync = require 'vasync'
-log = require './log'
+log = require('./log')
 
 DEFAULT_LIMIT = 25
 
@@ -56,6 +56,60 @@ class DB
           {rev: body._rev}
       else
         callback @db.attachment.insert doc, imageName, data, mimeType
+
+  # Saves doc with many attachments to couch
+  insertMultipart: (id, doc, attachments, callback) ->
+    #@db.get id, { revs_info: true }, (err, body) =>
+    #  if body
+    #    doc.rev = body._rev
+    #    @db.multipart.insert doc, attachments, id, callback
+    #  else
+    #    @db.multipart.insert doc, attachments, id, callback
+    
+    # Above code should work... but doesn't, so below is a
+    # workaround...
+    db = @db
+    log = @log
+    vasync.waterfall [
+      (cb) ->
+        log.info "get initial rev"
+        db.get id, { revs_info: true }, (err, body) ->
+          cb null, body
+      (initialBody, cb) ->
+        vasync.waterfall((attachments.map (attachment) ->
+          return (body, cb) ->
+            if typeof body == 'function'
+              cb = body
+              body = initialBody
+            rev = body?._rev || body?.rev
+            log.info "insert",
+              attachment:attachment.name
+              rev:rev
+            if rev
+              db.attachment.insert id, attachment.name, attachment.data,
+                attachment.content_type, {rev:rev}, (err, result) ->
+                  cb err, result
+            else
+              db.attachment.insert id, attachment.name, attachment.data,
+                attachment.content_type, {}, (err, result) ->
+                  cb err, result
+        ), cb)
+    ]
+    , (err, result) ->
+      log.info "done"
+      if err
+        log.error err
+      callback err, result
+
+  # Saves doc with many attachments to couch
+  insertAttachment: (id, doc, attachment, callback) ->
+    @db.get id, { revs_info: true }, (err, body) =>
+      if body
+        @db.attachment.insert id, attachment.name, attachment.data,
+          attachment.content_type, {rev:body._rev}, callback
+      else
+        @db.attachment.insert id, attachment.name, attachment.data,
+          attachment.content_type, callback
 
   # Lists challenges where `challenge.type == @type`.
   # (views.challenges)

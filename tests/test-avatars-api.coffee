@@ -41,6 +41,7 @@ describe 'Avatars API', () ->
   describe 'POST ' + endpoint('/auth/:token/pictures'), () ->
 
     it 'send avatar image to server and reply with Ok', (done) ->
+      @timeout 10000
       go()
         .post endpoint('/auth/alice-token/pictures')
         .attach('avatar', filename)
@@ -51,17 +52,59 @@ describe 'Avatars API', () ->
           done()
 
   describe 'GET ' + endpoint('/alice/original.png'), () ->
-    it 'send get request to server and reply with image', (done) ->
+
+    it 'retrieves the original image', (done) ->
       go()
         .get endpoint('/alice/original.png')
         .expect 200
         .expect 'Content-Type', 'image/png'
         .end (err, res) ->
-          log.info res.body
           expect(err).to.be(null)
           expect(res.body).to.be.a(Buffer)
           expect(res.body.length).to.be(453723)
-          #fs.writeFileSync("./tests/original.png", res.body)
+          done()
+
+    it 'caches the results', (done) ->
+      go()
+        .get endpoint('/alice/original.png')
+        .set 'if-none-match', 'Y'
+        .expect 304
+        .end (err, res) ->
+          expect(err).to.be(null)
+          expect(res.body).to.be.empty()
+          done()
+
+  describe 'GET ' + endpoint('/alice/64.png'), () ->
+    it 'retrieves 64x64 resized images', (done) ->
+      go()
+        .get endpoint('/alice/64.png')
+        .expect 200
+        .expect 'Content-Type', 'image/png'
+        .end (err, res) ->
+          expect(err).to.be(null)
+          expect(res.body).to.be.a(Buffer)
+          done()
+
+  describe 'GET ' + endpoint('/alice/128.png'), () ->
+    it 'retrieve 128x128 resized images', (done) ->
+      go()
+        .get endpoint('/alice/128.png')
+        .expect 200
+        .expect 'Content-Type', 'image/png'
+        .end (err, res) ->
+          expect(err).to.be(null)
+          expect(res.body).to.be.a(Buffer)
+          done()
+
+  describe 'GET ' + endpoint('/alice/256.png'), () ->
+    it 'retrieve 256x256 resized images', (done) ->
+      go()
+        .get endpoint('/alice/256.png')
+        .expect 200
+        .expect 'Content-Type', 'image/png'
+        .end (err, res) ->
+          expect(err).to.be(null)
+          expect(res.body).to.be.a(Buffer)
           done()
 
 # vim: ts=2:sw=2:et:

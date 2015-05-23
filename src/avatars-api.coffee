@@ -5,6 +5,8 @@ config = require '../config'
 DB = require "./couchdb"
 fs = require 'fs'
 request = require "request"
+ImageResizer = require './image-resizer'
+vasync = require 'vasync'
 
 sendError = (err, next) ->
   log.error err
@@ -46,34 +48,64 @@ class AvatarApi
 
     couchBase = "#{config.couch.serverUri}/#{config.couch.name}"
 
+    resizer = new ImageResizer(ImageResizer.RESIZERS.LWIP)
+
     # POST /pictures
     postAvatar = (req, res, next) =>
 
-      doc = req.params.user.username
-      #log = req.log
-      insertDone = (err, result) ->
-        log.info "insertDone"
+      docId = req.params.user.username
+
+      # Find the file to insert
+      log.debug "find the file to insert"
+      fArray = (f for i,f of req.files when f.type == "image/png")
+      if fArray.length != 1
+        log.error "wrong file type / can't find png"
+        err = new restify.InvalidContentError('invalid content')
+        return sendError err, next
+      f = fArray[0]
+        
+      fileData = null
+      vasync.waterfall [
+
+        # Load the file
+        readFile = (cb) ->
+          log.info "loading the file (#{f.path})"
+          fs.readFile f.path, (err, data) ->
+            fileData = data
+            cb err, data
+
+        # Create resized versions
+        resize = (fileData, cb) ->
+          log.info "create resized versions"
+          resizer.resize fileData, cb
+
+        # insert multipart attachment
+        insert = (sizes, cb) =>
+          attachments = ({
+            name: "#{size}.png"
+            data: data
+            content_type: "image/png"
+          } for size,data of sizes)
+          .concat
+            name: "original.png"
+            data: fileData
+            content_type: "image/png"
+          log.info "insert as multipart", attachments.map (a) ->
+            name: a.name
+            length: a.data.length
+          @db.insertMultipart docId, config:config, attachments, cb
+      ],
+      (err) ->
+
+        # Send result to user
         if err
-          log.error err
+          log.error "POST failed", err
           return sendError err, next
+        log.info "POST successful"
         res.send
           ok:true
-          url:"#{couchBase}/#{doc}/original.png"
+          url:"#{couchBase}/#{docId}/original.png"
         next()
-
-      for i of req.files
-        f = req.files[i]
-        if f.type != "image/png"
-          log.error "wrong file type: #{f.type}"
-          err = new restify.InvalidContentError('invalid content')
-          return sendError err, next
-        file = fs.createReadStream(f.path)
-        @db.createAttachmentStream doc, 'original.png', null, 'image/png',
-          (attachement) ->
-            log.info "createAttachmentStream done"
-            file.pipe attachement
-            file.on 'end', insertDone
-        return
 
     getThumbnail = (req, res) =>
       username = req.params.username
