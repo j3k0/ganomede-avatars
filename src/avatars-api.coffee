@@ -18,7 +18,7 @@ class AvatarApi
     @authdbClient = options.authdbClient
     if !@authdbClient
       log.info "create authdbClient"
-      authdbClient = authdb.createClient(
+      @authdbClient = authdb.createClient(
         host: config.authdb.host
         port: config.authdb.port)
 
