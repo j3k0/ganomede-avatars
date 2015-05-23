@@ -18,9 +18,10 @@ class DB
 
   # Gets doc by its id.
   get: (id, callback) ->
+    log = @log
     @db.get id, (err, doc, headers) ->
       if err && !(err.error == 'not_found' && err.reason == 'missing')
-        @log.error 'Failed to retrieve Couch doc',
+        log.error 'Failed to retrieve Couch doc',
           err: err,
           _id: id,
           headers: headers
@@ -30,6 +31,21 @@ class DB
         return callback(null, null)
 
       callback(null, doc)
+
+  getRev: (id, callback) ->
+    log = @log
+    @db.head id, (err, body, headers) ->
+      if err && !(err.error == 'not_found' && err.reason == 'missing')
+        log.error 'Failed to retrieve Couch doc',
+          err: err,
+          _id: id,
+          headers: headers
+        callback err
+      else
+        # http://docs.couchdb.org/en/latest/api/document/common.html
+        # The ETag header shows the current revision for the
+        # requested document.
+        callback null, headers?.etag
 
   # Saves doc to couch
   insert: (doc, customId, callback) ->
@@ -50,10 +66,10 @@ class DB
 
   # Saves doc to couch
   createAttachmentStream: (doc, imageName, data, mimeType, callback) ->
-    @db.get doc, { revs_info: true }, (err, body) =>
-      if body
+    @db.head doc, (err, body, headers) =>
+      if headers.etag
         callback @db.attachment.insert doc, imageName, data, mimeType,
-          {rev: body._rev}
+          {rev: headers.etag}
       else
         callback @db.attachment.insert doc, imageName, data, mimeType
 
@@ -73,15 +89,15 @@ class DB
     vasync.waterfall [
       (cb) ->
         log.info "get initial rev"
-        db.get id, { revs_info: true }, (err, body) ->
-          cb null, body
+        db.head id, (err, body, headers) ->
+          cb null, rev:headers?.etag
       (initialBody, cb) ->
         vasync.waterfall((attachments.map (attachment) ->
           return (body, cb) ->
             if typeof body == 'function'
               cb = body
               body = initialBody
-            rev = body?._rev || body?.rev
+            rev = body?.rev
             log.info "insert",
               attachment:attachment.name
               rev:rev
@@ -103,10 +119,10 @@ class DB
 
   # Saves doc with many attachments to couch
   insertAttachment: (id, doc, attachment, callback) ->
-    @db.get id, { revs_info: true }, (err, body) =>
-      if body
+    @db.head id, (err, body, headers) =>
+      if headers.etag
         @db.attachment.insert id, attachment.name, attachment.data,
-          attachment.content_type, {rev:body._rev}, callback
+          attachment.content_type, {rev:headers.etag}, callback
       else
         @db.attachment.insert id, attachment.name, attachment.data,
           attachment.content_type, callback

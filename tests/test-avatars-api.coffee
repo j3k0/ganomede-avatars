@@ -53,6 +53,8 @@ describe 'Avatars API', () ->
 
   describe 'GET ' + endpoint('/alice/original.png'), () ->
 
+    etag = null
+
     it 'retrieves the original image', (done) ->
       go()
         .get endpoint('/alice/original.png')
@@ -62,16 +64,40 @@ describe 'Avatars API', () ->
           expect(err).to.be(null)
           expect(res.body).to.be.a(Buffer)
           expect(res.body.length).to.be(453723)
+          expect(res.header.etag).not.to.be.empty()
+          etag = res.header.etag
           done()
 
     it 'caches the results', (done) ->
       go()
         .get endpoint('/alice/original.png')
-        .set 'if-none-match', 'Y'
+        .set 'if-none-match', etag
         .expect 304
         .end (err, res) ->
           expect(err).to.be(null)
           expect(res.body).to.be.empty()
+          done()
+
+    it 'expects the right revision for caching', (done) ->
+      go()
+        .get endpoint('/alice/original.png')
+        .set 'if-none-match', 'wrong-etag'
+        .expect 200
+        .end (err, res) ->
+          expect(err).to.be(null)
+          expect(res.body).to.be.a(Buffer)
+          expect(res.body.length).to.be(453723)
+          expect(res.header.etag).not.to.be.empty()
+          done()
+
+    it 'fails with 404', (done) ->
+      go()
+        .get endpoint('/bob/original.png')
+        .set 'if-none-match', etag
+        .expect 404
+        .end (err, res) ->
+          expect(err).to.be(null)
+          expect(res.body.code).to.be('NotFoundError')
           done()
 
   describe 'GET ' + endpoint('/alice/64.png'), () ->

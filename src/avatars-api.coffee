@@ -107,20 +107,29 @@ class AvatarApi
           url:"#{couchBase}/#{docId}/original.png"
         next()
 
-    getThumbnail = (req, res) =>
+    getThumbnail = (req, res, next) =>
       username = req.params.username
       size = req.params.size
-      if req.headers["if-none-match"] == "Y"
-        log.info "/#{username}/#{size} using cache"
-        res.setHeader('Cache-Control', 'max-age=3600')
-        res.send 304
-      else
-        log.info "/#{username}/#{size} NOT using cache"
-        res.setHeader('Content-Type', 'image/png')
-        res.setHeader('Cache-Control', 'max-age=3600')
-        res.setHeader('ETag', "Y")
-        res.writeHead(200)
-        request.get("#{couchBase}/#{username}/#{size}").pipe(res)
+      etag = req.headers["if-none-match"]
+      @db.getRev username, (err, rev) ->
+        if rev
+          if etag == rev
+            log.info "/#{username}/#{size} using cache"
+            res.setHeader('Cache-Control', 'max-age=3600')
+            res.send 304
+          else
+            log.info "/#{username}/#{size} NOT using cache"
+            res.setHeader('Content-Type', 'image/png')
+            res.setHeader('Cache-Control', 'max-age=3600')
+            res.setHeader('ETag', rev)
+            res.writeHead(200)
+            request.get("#{couchBase}/#{username}/#{size}").pipe(res)
+          next()
+        else
+          err = new restify.NotFoundError(
+            'no avatar picture for ' + username)
+          log.error "GET 404", err
+          sendError err, next
 
     server.post "/#{prefix}/auth/:authToken/pictures",
       authMiddleware, postAvatar
