@@ -10,6 +10,10 @@ about =
   description: pk.description
   startDate: (new Date).toISOString()
 
+if process.env.CDN_HOST
+  about.config =
+    cdn: process.env.CDN_HOST
+
 sendAbout = (req, res, next) ->
   res.send about
   next()
@@ -22,4 +26,3 @@ module.exports =
   addRoutes: addRoutes
 
 # vim: ts=2:sw=2:et:
-

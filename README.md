@@ -20,9 +20,24 @@ Configuration
  * `REDIS_AUTH_PORT_6379_TCP_PORT` - Port of the AuthDB redis
  * `COUCH_AVATARS_PORT_5984_TCP_ADDR` - IP of the Avatars couchdb
  * `COUCH_AVATARS_PORT_5984_TCP_PORT` - Port of the Avatars couchdb
+ * `CDN_HOST` - Recommended host to GET the avatar images
 
 API
 ---
+
+# About [/avatars/v1/about]
+
+## Read the about [GET]
+
+### response [200] OK
+
+    {
+      "type": "avatars/v1",
+      "version": "1.0.0",
+      "config": {
+        "cdn" "static.ggs.ovh"
+      }
+    }
 
 # User's avatar pictures [/avatars/v1/auth/:token/pictures]
 
