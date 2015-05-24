@@ -114,11 +114,11 @@ class AvatarApi
       @db.getRev username, (err, rev) ->
         if rev
           if etag == rev
-            log.info "/#{username}/#{size} using cache"
+            log.info "/#{username}/#{size} 304"
             res.setHeader('Cache-Control', 'max-age=3600')
             res.send 304
           else
-            log.info "/#{username}/#{size} NOT using cache"
+            log.info "/#{username}/#{size} 200"
             res.setHeader('Content-Type', 'image/png')
             res.setHeader('Cache-Control', 'max-age=3600')
             res.setHeader('ETag', rev)
@@ -126,10 +126,9 @@ class AvatarApi
             request.get("#{couchBase}/#{username}/#{size}").pipe(res)
           next()
         else
-          err = new restify.NotFoundError(
-            'no avatar picture for ' + username)
-          log.error "GET 404", err
-          sendError err, next
+          err = new restify.NotFoundError('no avatar for user')
+          log.info "/#{username}/#{size} 404"
+          next err
 
     server.post "/#{prefix}/auth/:authToken/pictures",
       authMiddleware, postAvatar

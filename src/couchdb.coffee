@@ -36,10 +36,10 @@ class DB
     log = @log
     @db.head id, (err, body, headers) ->
       if err && !(err.error == 'not_found' && err.reason == 'missing')
-        log.error 'Failed to retrieve Couch doc',
-          err: err,
-          _id: id,
-          headers: headers
+        #log.error 'Failed to retrieve Couch doc',
+        #  err: err,
+        #  _id: id,
+        #  headers: headers
         callback err
       else
         # http://docs.couchdb.org/en/latest/api/document/common.html
