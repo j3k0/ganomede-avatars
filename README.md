@@ -20,6 +20,7 @@ Configuration
  * `REDIS_AUTH_PORT_6379_TCP_PORT` - Port of the AuthDB redis
  * `COUCH_AVATARS_PORT_5984_TCP_ADDR` - IP of the Avatars couchdb
  * `COUCH_AVATARS_PORT_5984_TCP_PORT` - Port of the Avatars couchdb
+ * `COUCH_AVATARS_DB_NAME` - Name of the avatars database
  * `CDN_HOST` - Recommended host to GET the avatar images
 
 API

@@ -14,7 +14,7 @@ class DB
     @db = nano(serverUri).use(dbname)
     @designName = designName
 
-  @views: null
+  @views: {}
 
   # Gets doc by its id.
   get: (id, callback) ->
