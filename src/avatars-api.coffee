@@ -44,7 +44,8 @@ class AvatarApi
             url: req.url
             headers: req.headers
             authToken: authToken
-          err = new restify.UnauthorizedError('not authorized, authToken invalid: ' + authToken)
+          msg = 'not authorized, authToken invalid: ' + authToken
+          err = new restify.UnauthorizedError(msg)
           return sendError(err, next)
 
         req.params.user = account
