@@ -40,7 +40,12 @@ class AvatarApi
 
       @authdbClient.getAccount authToken, (err, account) ->
         if err || !account
-          err = new restify.UnauthorizedError('not authorized')
+          log.error "getAccount error",
+            url: req.url
+            headers: req.headers
+            authToken: authToken
+          msg = 'not authorized, authToken invalid: ' + authToken
+          err = new restify.UnauthorizedError(msg)
           return sendError(err, next)
 
         req.params.user = account
