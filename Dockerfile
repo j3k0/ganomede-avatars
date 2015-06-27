@@ -16,9 +16,10 @@ COPY src /home/app/code/src
 USER root
 RUN chown -R app /home/app
 
-ENV "CDN_HOST="
+ENV "CDN_HOST=" \
+    "NEW_RELIC_LICENSE_KEY="
 
 WORKDIR /home/app/code
 USER app
 RUN make check
-CMD node_modules/.bin/forever index.js
+CMD node index.js
