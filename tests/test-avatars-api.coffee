@@ -9,16 +9,26 @@ vasync = require 'vasync'
 fs = require('fs')
 log = require '../src/log'
 
-describe 'Avatars API', () ->
+describe.only 'Avatars API', () ->
 
   go = supertest.bind(supertest, server)
   authdbClient = fakeAuthDb.createClient()
+  bansClient = {
+    _nCalls: 0
+    _callArgs: []
+    isBanned: (username, callback) ->
+      ++@_nCalls
+      @_callArgs.push(username)
+      banned = username.indexOf('banned-') == 0
+      process.nextTick(() -> callback(null, banned))
+  }
 
   endpoint = (path) ->
     return "/#{config.routePrefix}#{path || ''}"
 
   users =
     'alice': {username: 'alice', token: 'alice-token'}
+    'banned-joe': {username: 'banned-joe', token: 'banned-joe-token'}
 
   filename = "./tests/image-resizer/Yoshi.png"
 
@@ -28,8 +38,10 @@ describe 'Avatars API', () ->
     for own username, accountInfo of users
       authdbClient.addAccount accountInfo.token, accountInfo
 
-    api = avatarsApi.create
-      authdbClient: authdbClient
+    api = avatarsApi.create({
+      authdbClient: authdbClient,
+      bansClient
+    })
 
     api.addRoutes endpoint(), server
     api.initialize ->
@@ -61,7 +73,6 @@ describe 'Avatars API', () ->
           done()
 
   describe 'GET ' + endpoint('/alice/original.png'), () ->
-
     etag = null
 
     it 'retrieves the original image', (done) ->
@@ -109,7 +120,7 @@ describe 'Avatars API', () ->
           expect(res.body.code).to.be('NotFoundError')
           done()
 
-  describe 'GET ' + endpoint('/alice/64.png'), () ->
+  describe 'GET ' + endpoint('/alice/#{size}.png'), () ->
     it 'retrieves 64x64 resized images', (done) ->
       go()
         .get endpoint('/alice/64.png')
@@ -120,7 +131,6 @@ describe 'Avatars API', () ->
           expect(res.body).to.be.a(Buffer)
           done()
 
-  describe 'GET ' + endpoint('/alice/128.png'), () ->
     it 'retrieve 128x128 resized images', (done) ->
       go()
         .get endpoint('/alice/128.png')
@@ -131,7 +141,6 @@ describe 'Avatars API', () ->
           expect(res.body).to.be.a(Buffer)
           done()
 
-  describe 'GET ' + endpoint('/alice/256.png'), () ->
     it 'retrieve 256x256 resized images', (done) ->
       go()
         .get endpoint('/alice/256.png')
@@ -141,5 +150,31 @@ describe 'Avatars API', () ->
           expect(err).to.be(null)
           expect(res.body).to.be.a(Buffer)
           done()
+
+    it 'calls bansClient to check for bans', () ->
+      assert(bansClient._nCalls == 7)
+      assert.deepEqual(bansClient._callArgs, [
+        'alice', 'alice', 'alice',
+        'bob',
+        'alice', 'alice', 'alice'
+      ])
+
+    it 'fake bans client retursn false for alice', (done) ->
+      bansClient.isBanned 'alice', (err, banned) ->
+        assert(err == null)
+        assert(banned == false)
+        done()
+
+    it 'fake bans client retursn true for banned-joe', (done) ->
+      bansClient.isBanned 'banned-joe', (err, banned) ->
+        assert(err == null)
+        assert(banned == true)
+        done()
+
+    it 'banned users are 404', (done) ->
+      go()
+        .get(endpoint('/banned-joe/256.png'))
+        .expect(404)
+        .end(done)
 
 # vim: ts=2:sw=2:et:
