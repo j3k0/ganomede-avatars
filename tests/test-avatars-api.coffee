@@ -9,7 +9,7 @@ vasync = require 'vasync'
 fs = require('fs')
 log = require '../src/log'
 
-describe.only 'Avatars API', () ->
+describe 'Avatars API', () ->
 
   go = supertest.bind(supertest, server)
   authdbClient = fakeAuthDb.createClient()

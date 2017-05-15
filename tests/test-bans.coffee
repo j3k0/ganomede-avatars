@@ -53,7 +53,7 @@ describe 'bans', () ->
         get: (url, cb) ->
           assert(url, '/users/v1/banned-users/alice')
           assert(cb instanceof Function)
-          process.nextTick(() -> cb(null, reply(banned)))
+          process.nextTick(() -> cb(null, {}, {}, reply(banned)))
       }
 
     it 'returns true for existing bans', (done) ->
