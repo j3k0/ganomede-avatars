@@ -11,7 +11,7 @@ class RealClient
   # callback(err, boolean)
   isBanned: (username, callback) ->
     url = "/users/v1/banned-users/#{encodeURIComponent(username)}"
-    this.api.get url, (err, banInfo) =>
+    this.api.get url, (err, req, res, banInfo) =>
       if (err)
         @log.error({username, err}, 'Failed to check ban info')
         return callback(err)
