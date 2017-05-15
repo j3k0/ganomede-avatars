@@ -22,6 +22,10 @@ Configuration
  * `COUCH_AVATARS_PORT_5984_TCP_PORT` - Port of the Avatars couchdb
  * `COUCH_AVATARS_DB_NAME` - Name of the avatars database
  * `CDN_HOST` - Recommended host to GET the avatar images
+ * Optional link to [users service](https://github.com/j3k0/ganomede-users)
+    - `USERS_PORT_8080_TCP_ADDR` — address
+    - `USERS_PORT_8080_TCP_PORT`
+    - If any of these options are missing, no ban check will be performed — every user account will be considered to be in good standing (no bans)
 
 API
 ---
@@ -60,6 +64,8 @@ Will:
 ### response [200] OK
 
 # Thumbnails [/avatars/v1/:username/:size]
+
+  If linked to users service, will perform ban check. Banned `:username`s will return 404 no matter avatar's existence.
 
     + Parameters
         + username (string) ... User to retrieve the avatar image of

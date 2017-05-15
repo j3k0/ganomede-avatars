@@ -8,14 +8,10 @@ check: install
 	./node_modules/.bin/coffeelint -q src tests
 
 test: check
-	#./node_modules/.bin/mocha -b --recursive --compilers coffee:coffee-script/register tests | ./node_modules/.bin/bunyan -l ${BUNYAN_LEVEL}
-	( ./node_modules/.bin/pouchdb-server --level-backend memdown -p 3053 & echo $$! > pouchdb-server.pid ) > /dev/null
-	# Wait for couch to be ready
-	while true; do if curl http://127.0.0.1:3053 > /dev/null 2>/dev/null; then break; else sleep 0.2; fi; done
-	( sleep 10 ; kill `cat pouchdb-server.pid` 2> /dev/null ) &
-	COUCH_AVATARS_PORT_5984_TCP_ADDR=127.0.0.1 COUCH_AVATARS_PORT_5984_TCP_PORT=3053 ./node_modules/.bin/mocha -b --recursive --compilers coffee:coffee-script/register tests | ./node_modules/.bin/bunyan -l ${BUNYAN_LEVEL}
-	kill `cat pouchdb-server.pid` || true
-	rm -f config.json
+	COUCH_AVATARS_PORT_5984_TCP_ADDR=127.0.0.1 COUCH_AVATARS_PORT_5984_TCP_PORT=5984 ./node_modules/.bin/mocha -b --recursive --compilers coffee:coffee-script/register tests | ./node_modules/.bin/bunyan -l ${BUNYAN_LEVEL}
+
+testw:
+	COUCH_AVATARS_PORT_5984_TCP_ADDR=127.0.0.1 COUCH_AVATARS_PORT_5984_TCP_PORT=5984 ./node_modules/.bin/mocha --watch -b --recursive --compilers coffee:coffee-script/register tests | ./node_modules/.bin/bunyan -l ${BUNYAN_LEVEL}
 
 coverage: test
 	@mkdir -p doc

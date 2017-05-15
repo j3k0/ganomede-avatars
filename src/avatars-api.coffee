@@ -22,6 +22,10 @@ class AvatarApi
         host: config.authdb.host
         port: config.authdb.port)
 
+    @bansClient = options.bansClient
+    if (!@bansClient)
+      throw new TypeError('Please provide options.bansClient')
+
   initialize: (done) ->
     DB.initialize config.couch, (err, ldb) =>
       @db = ldb
@@ -68,7 +72,7 @@ class AvatarApi
         err = new restify.InvalidContentError('invalid content')
         return sendError err, next
       f = fArray[0]
-        
+
       fileData = null
       vasync.waterfall [
 
@@ -112,28 +116,82 @@ class AvatarApi
           url:"#{couchBase}/#{docId}/original.png"
         next()
 
+    # callback(err, info)
+    # info:
+    #   - fresh Boolean (whether etag matches revision)
+    #   - headers Object (headers to set on reply)
+    fetchAvatarInfo = (username, size, etag, cb) =>
+      @db.getRev username, (err, rev) ->
+        if (err)
+          if (err.statusCode == 404)
+            return cb(null, null)
+
+          log.error({username, size, err}, 'Failed to fetch avatar info')
+          return cb(err)
+
+        fresh = etag == rev
+        headers = {'Cache-Control': 'max-age=3600'}
+        status = 304
+
+        if (!fresh)
+          headers['Content-Type'] = 'image/png'
+          headers['ETag'] = rev
+          status = 200
+
+        cb(null, {fresh, headers, status})
+
+        # if rev
+        #   if etag == rev
+        #     log.info "/#{username}/#{size} 304"
+        #     res.setHeader('Cache-Control', 'max-age=3600')
+        #     res.send 304
+        #   else
+        #     log.info "/#{username}/#{size} 200"
+        #     res.setHeader('Content-Type', 'image/png')
+        #     res.setHeader('Cache-Control', 'max-age=3600')
+        #     res.setHeader('ETag', rev)
+        #     res.writeHead(200)
+        # else
+        #   cb(null, null)
+
     getThumbnail = (req, res, next) =>
       username = req.params.username
       size = req.params.size
       etag = req.headers["if-none-match"]
-      @db.getRev username, (err, rev) ->
-        if rev
-          if etag == rev
-            log.info "/#{username}/#{size} 304"
-            res.setHeader('Cache-Control', 'max-age=3600')
-            res.send 304
-          else
-            log.info "/#{username}/#{size} 200"
-            res.setHeader('Content-Type', 'image/png')
-            res.setHeader('Cache-Control', 'max-age=3600')
-            res.setHeader('ETag', rev)
-            res.writeHead(200)
-            request.get("#{couchBase}/#{username}/#{size}").pipe(res)
-          next()
-        else
+
+      onInfo = (err, results) ->
+        if (err)
+          log.error({err}, 'getThumbnail() failed')
+
+          console.dir({status: err})
+
+          return next(new restify.InternalServerError('hehe'))
+
+        banned = results.operations[0].result
+        avatarInfo = results.operations[1].result
+
+        if (banned || !avatarInfo)
           err = new restify.NotFoundError('no avatar for user')
-          log.info "/#{username}/#{size} 404"
-          next err
+          reason = if banned then 'banned' else 'missing'
+          log.info "/#{username}/#{size} 404 (#{reason})"
+          return next(err)
+
+        log.info("/#{username}/#{size}", avatarInfo.status)
+        res.writeHead(avatarInfo.status, avatarInfo.headers)
+
+        if avatarInfo.fresh
+          res.end()
+        else
+          request.get("#{couchBase}/#{username}/#{size}").pipe(res)
+
+        next()
+
+      vasync.parallel({
+        funcs: [
+          (cb) => @bansClient.isBanned(username, cb),
+          (cb) -> fetchAvatarInfo(username, size, etag, cb)
+        ],
+      }, onInfo)
 
     server.post "/#{prefix}/auth/:authToken/pictures",
       authMiddleware, postAvatar

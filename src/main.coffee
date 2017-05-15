@@ -2,6 +2,7 @@ log = require "./log"
 aboutApi = require "./about-api"
 pingApi = require "./ping-api"
 avatarsApi = require "./avatars-api"
+bans = require "./bans"
 api = null
 
 addRoutes = (prefix, server) ->
@@ -18,7 +19,8 @@ addRoutes = (prefix, server) ->
 
 initialize = (callback) ->
   log.info "initializing backend"
-  api = avatarsApi.create()
+  bansClient = bans.createClient(process.env, log)
+  api = avatarsApi.create({bansClient})
   api.initialize callback
 
 destroy = ->
