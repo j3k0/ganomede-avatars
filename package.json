@@ -1,6 +1,6 @@
 {
   "name": "avatars",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "api": "avatars/v1",
   "description": "avatars micro service",
   "private": true,
