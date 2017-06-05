@@ -9,12 +9,14 @@ function loadConfig(cb) {
     config.username = process.argv[2];
     config.password = process.argv[3];
     config.filename = process.argv[4];
+    config.baseurl = "https://" + config.host + (config.port != 443 ? ':' + config.port : '');
     cb(config);
 }
 
 function login(config, callback) {
+    console.log('logging in...');
     request.post({
-        uri: "https://" + config.host + ":" + config.port + "/users/v1/login",
+        uri: config.baseurl + "/users/v1/login",
         json: true,
         body: {
             username: config.username,
@@ -27,6 +29,8 @@ function login(config, callback) {
             callback(body.token);
         }
         else {
+            console.error('login failed.');
+            console.dir(arguments);
             if (error)
                 console.error(error);
             process.exit(1);
@@ -36,7 +40,7 @@ function login(config, callback) {
 
 function post(config, callback) {
     var endpoint = '/avatars/v1/auth/' + config.token + '/pictures';
-    var url = 'https://' + config.host + ':' + config.port + endpoint;
+    var url = config.baseurl + endpoint;
     console.log("uploading to " + url + "...");
     var filestream = fs.createReadStream(__dirname + "/" + config.filename);
     var webstream = request.post({
