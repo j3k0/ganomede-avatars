@@ -28,7 +28,7 @@
     "newrelic": "^1.20.2",
     "redis": "^0.12.1",
     "request": "^2.55.0",
-    "restify": "^4.2.0",
+    "restify": "^5.0.1",
     "vasync": "^1.6.2"
   },
   "config": {
