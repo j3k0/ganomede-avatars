@@ -8,7 +8,9 @@
   "scripts": {
     "start": "./node_modules/.bin/forever start index.js",
     "stop": "./node_modules/.bin/forever stop index.js",
-    "test": "make test"
+    "test": "make test",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
   },
   "author": "Jean-Christophe Hoelt <hoelt@fovea.cc>",
   "license": "Private",
@@ -29,7 +31,8 @@
     "redis": "^0.12.1",
     "request": "^2.55.0",
     "restify": "^4.2.0",
-    "vasync": "^1.6.2"
+    "vasync": "^1.6.2",
+    "snyk": "^1.41.1"
   },
   "config": {
     "blanket": {
@@ -46,5 +49,6 @@
     "istanbul": "https://github.com/duereg/istanbul/archive/master.tar.gz",
     "memdown": "^1.0.0",
     "supertest": "^0.15.0"
-  }
+  },
+  "snyk": true
 }
