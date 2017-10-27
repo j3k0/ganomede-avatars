@@ -4,8 +4,7 @@ SHELL = /bin/bash -o pipefail
 all: install test
 
 check: install
-	./node_modules/.bin/eslint src/
-	./node_modules/.bin/coffeelint -q src tests
+	npm run lint
 
 test: check
 	COUCH_AVATARS_PORT_5984_TCP_ADDR=127.0.0.1 COUCH_AVATARS_PORT_5984_TCP_PORT=5984 ./node_modules/.bin/mocha -b --recursive --compilers coffee:coffee-script/register tests | ./node_modules/.bin/bunyan -l ${BUNYAN_LEVEL}
