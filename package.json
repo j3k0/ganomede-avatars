@@ -5,6 +5,10 @@
   "description": "avatars micro service",
   "private": true,
   "main": "index.js",
+  "engines": {
+    "node": "6.10.1",
+    "npm": "3.10.10"
+  },
   "scripts": {
     "start": "./node_modules/.bin/forever start index.js",
     "stop": "./node_modules/.bin/forever stop index.js",
