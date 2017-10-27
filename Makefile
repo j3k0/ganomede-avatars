@@ -7,10 +7,10 @@ check: install
 	npm run lint
 
 test: check
-	COUCH_AVATARS_PORT_5984_TCP_ADDR=127.0.0.1 COUCH_AVATARS_PORT_5984_TCP_PORT=5984 ./node_modules/.bin/mocha -b --recursive --compilers coffee:coffee-script/register tests | ./node_modules/.bin/bunyan -l ${BUNYAN_LEVEL}
+	COUCH_AVATARS_PORT_5984_TCP_ADDR=127.0.0.1 COUCH_AVATARS_PORT_5984_TCP_PORT=5984 ./node_modules/.bin/mocha --exit -b --recursive --compilers coffee:coffee-script/register tests | ./node_modules/.bin/bunyan -l ${BUNYAN_LEVEL}
 
 testw:
-	COUCH_AVATARS_PORT_5984_TCP_ADDR=127.0.0.1 COUCH_AVATARS_PORT_5984_TCP_PORT=5984 ./node_modules/.bin/mocha --watch -b --recursive --compilers coffee:coffee-script/register tests | ./node_modules/.bin/bunyan -l ${BUNYAN_LEVEL}
+	COUCH_AVATARS_PORT_5984_TCP_ADDR=127.0.0.1 COUCH_AVATARS_PORT_5984_TCP_PORT=5984 ./node_modules/.bin/mocha --exit --watch -b --recursive --compilers coffee:coffee-script/register tests | ./node_modules/.bin/bunyan -l ${BUNYAN_LEVEL}
 
 coverage: test
 	@mkdir -p doc
@@ -24,7 +24,7 @@ coverage: test
 	@#echo "coverage exported to doc/coverage.html"
 
 	@# coverage using istanbul
-	./node_modules/.bin/istanbul cover --dir doc ./node_modules/.bin/_mocha -- --recursive --compilers coffee:coffee-script/register tests
+	./node_modules/.bin/istanbul cover --dir doc ./node_modules/.bin/_mocha -- --exit --recursive --compilers coffee:coffee-script/register tests
 	@echo "coverage exported to doc/lcov-report/index.html"
 
 run: check
