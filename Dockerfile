@@ -23,6 +23,5 @@ USER app
 WORKDIR /home/app/code
 CMD node index.js
 
-ENV "CDN_HOST=" \
-    "NEW_RELIC_LICENSE_KEY="
+ENV "NEW_RELIC_LICENSE_KEY="
 
