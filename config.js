@@ -1,11 +1,13 @@
-var url = require('url');
-var pkg = require("./package.json");
+'use strict';
+
+const url = require('url');
+const pkg = require('./package.json');
 
 module.exports = {
   port: +process.env.PORT || 8000,
   routePrefix: process.env.ROUTE_PREFIX || pkg.api,
 
-   couch: {
+  couch: {
     serverUri: url.format({
       protocol: 'http',
       hostname: process.env.COUCH_AVATARS_PORT_5984_TCP_ADDR || 'localhost',
