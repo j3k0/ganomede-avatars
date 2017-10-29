@@ -62,6 +62,7 @@ describe 'Avatars API', () ->
           expect(res.body).to.be.an(Object)
           expect(res.body.url).to.be(undefined)
           done()
+      return
 
     it 'allows to replace the picture', (done) ->
       go()
@@ -73,6 +74,7 @@ describe 'Avatars API', () ->
           expect(res.body).to.be.an(Object)
           expect(res.body.url).to.be(undefined)
           done()
+      return
 
   describe 'GET ' + endpoint('/alice/original.png'), () ->
     etag = null
@@ -89,6 +91,7 @@ describe 'Avatars API', () ->
           expect(res.header.etag).not.to.be.empty()
           etag = res.header.etag
           done()
+      return
 
     it 'caches the results', (done) ->
       go()
@@ -99,6 +102,7 @@ describe 'Avatars API', () ->
           expect(err).to.be(null)
           expect(res.body).to.be.empty()
           done()
+      return
 
     it 'expects the right revision for caching', (done) ->
       go()
@@ -111,6 +115,7 @@ describe 'Avatars API', () ->
           expect(res.body.length).to.be(453723)
           expect(res.header.etag).not.to.be.empty()
           done()
+      return
 
     it 'fails with 404', (done) ->
       go()
@@ -121,6 +126,7 @@ describe 'Avatars API', () ->
           expect(err).to.be(null)
           expect(res.body.code).to.be('NotFoundError')
           done()
+      return
 
   describe 'GET ' + endpoint('/alice/#{size}.png'), () ->
     it 'retrieves 64x64 resized images', (done) ->
@@ -132,6 +138,7 @@ describe 'Avatars API', () ->
           expect(err).to.be(null)
           expect(res.body).to.be.a(Buffer)
           done()
+      return
 
     it 'retrieve 128x128 resized images', (done) ->
       go()
@@ -142,6 +149,7 @@ describe 'Avatars API', () ->
           expect(err).to.be(null)
           expect(res.body).to.be.a(Buffer)
           done()
+      return
 
     it 'retrieve 256x256 resized images', (done) ->
       go()
@@ -152,6 +160,7 @@ describe 'Avatars API', () ->
           expect(err).to.be(null)
           expect(res.body).to.be.a(Buffer)
           done()
+      return
 
     it 'calls bansClient to check for bans', () ->
       assert(bansClient._nCalls == 7)
@@ -178,5 +187,6 @@ describe 'Avatars API', () ->
         .get(endpoint('/banned-joe/256.png'))
         .expect(404)
         .end(done)
+      return
 
 # vim: ts=2:sw=2:et:

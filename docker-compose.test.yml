@@ -1,6 +1,6 @@
-app:
+sut:
     build: .
-    command: sh -c "wait-for-it couch_avatars:5984 redis_auth:6379 && curl http://couch_avatars/$COUCH_AVATARS_DB_NAME -X PUT && node index.js"
+    command: sh -c "wait-for-it couch_avatars:5984 && wait-for-it redis_auth:6379 && curl -X PUT -H Accept:text/plain http://couch_avatars:5984/ganomede_avatars_test && npm test"
     volumes:
      - ./wait-for-it:/usr/local/bin/wait-for-it
      - ./src:/home/app/code/src
@@ -10,13 +10,9 @@ app:
      - ./index.js:/home/app/code/index.js
      - ./config.js:/home/app/code/config.js
      - ./package.json:/home/app/code/package.json
-    ports:
-     - "8000:8000"
     links:
      - couch:couch_avatars
      - redis:redis_auth
-    env:
-     - COUCH_AVATARS_DB_NAME=ganomede_avatars
 
 couch:
     image: klaemo/couchdb:1.6.1

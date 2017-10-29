@@ -1,5 +1,7 @@
 BUNYAN_LEVEL?=1000
 SHELL = /bin/bash -o pipefail
+COUCH_AVATARS_PORT_5984_TCP_ADDR?=127.0.0.1
+COUCH_AVATARS_PORT_5984_TCP_PORT?=5984
 
 all: install test
 
@@ -7,10 +9,10 @@ check: install
 	npm run lint
 
 test: check
-	COUCH_AVATARS_PORT_5984_TCP_ADDR=127.0.0.1 COUCH_AVATARS_PORT_5984_TCP_PORT=5984 ./node_modules/.bin/mocha --exit -b --recursive --compilers coffee:coffee-script/register tests | ./node_modules/.bin/bunyan -l ${BUNYAN_LEVEL}
+	./node_modules/.bin/mocha --exit -b --recursive --compilers coffee:coffee-script/register tests | ./node_modules/.bin/bunyan -l ${BUNYAN_LEVEL}
 
 testw:
-	COUCH_AVATARS_PORT_5984_TCP_ADDR=127.0.0.1 COUCH_AVATARS_PORT_5984_TCP_PORT=5984 ./node_modules/.bin/mocha --exit --watch -b --recursive --compilers coffee:coffee-script/register tests | ./node_modules/.bin/bunyan -l ${BUNYAN_LEVEL}
+	./node_modules/.bin/mocha --exit --watch -b --recursive --compilers coffee:coffee-script/register tests | ./node_modules/.bin/bunyan -l ${BUNYAN_LEVEL}
 
 coverage: test
 	@mkdir -p doc

@@ -10,8 +10,8 @@
     "npm": "3.10.10"
   },
   "scripts": {
-    "start": "./node_modules/.bin/forever start index.js",
-    "stop": "./node_modules/.bin/forever stop index.js",
+    "start": "forever start index.js",
+    "stop": "forever stop index.js",
     "test": "make test",
     "lint": "coffeelint --quiet src/ tests/ && eslint {index,config,newrelic}.js"
   },

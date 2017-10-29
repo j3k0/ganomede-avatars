@@ -29,8 +29,8 @@ if (cluster.isMaster) {
 else {
 
   // worker
-  var main = require("./src/main");
-  var server = require('./src/server').createServer();
+  const main = require('./src/main');
+  const server = require('./src/server').createServer();
 
   // Intitialize backend, add routes
   main.initialize();
