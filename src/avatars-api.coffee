@@ -111,9 +111,7 @@ class AvatarApi
           log.error "POST failed", err
           return sendError err, next
         log.info "POST successful"
-        res.send
-          ok:true
-          url:"#{couchBase}/#{docId}/original.png"
+        res.send({ok: true})
         next()
 
     # callback(err, info)

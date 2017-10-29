@@ -60,6 +60,7 @@ describe 'Avatars API', () ->
         .end (err, res) ->
           expect(err).to.be(null)
           expect(res.body).to.be.an(Object)
+          expect(res.body.url).to.be(undefined)
           done()
 
     it 'allows to replace the picture', (done) ->
@@ -70,6 +71,7 @@ describe 'Avatars API', () ->
         .end (err, res) ->
           expect(err).to.be(null)
           expect(res.body).to.be.an(Object)
+          expect(res.body.url).to.be(undefined)
           done()
 
   describe 'GET ' + endpoint('/alice/original.png'), () ->
