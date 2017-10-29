@@ -111,9 +111,7 @@ class AvatarApi
           log.error "POST failed", err
           return sendError err, next
         log.info "POST successful"
-        res.send
-          ok:true
-          url:"#{couchBase}/#{docId}/original.png"
+        res.send({ok: true})
         next()
 
     # callback(err, info)
@@ -131,14 +129,12 @@ class AvatarApi
 
         fresh = etag == rev
         headers = {'Cache-Control': 'max-age=3600'}
-        status = 304
 
         if (!fresh)
           headers['Content-Type'] = 'image/png'
           headers['ETag'] = rev
-          status = 200
 
-        cb(null, {fresh, headers, status})
+        cb(null, {fresh, headers})
 
         # if rev
         #   if etag == rev
@@ -176,12 +172,12 @@ class AvatarApi
           log.info "/#{username}/#{size} 404 (#{reason})"
           return next(err)
 
-        log.info("/#{username}/#{size}", avatarInfo.status)
-        res.writeHead(avatarInfo.status, avatarInfo.headers)
+        log.info("/#{username}/#{size}", if avatarInfo.fresh then 304 else 200)
 
         if avatarInfo.fresh
-          res.end()
+          res.send(304)
         else
+          res.writeHead(200, avatarInfo.headers)
           request.get("#{couchBase}/#{username}/#{size}").pipe(res)
 
         next()
