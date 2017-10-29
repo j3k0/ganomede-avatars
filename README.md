@@ -21,7 +21,6 @@ Configuration
  * `COUCH_AVATARS_PORT_5984_TCP_ADDR` - IP of the Avatars couchdb
  * `COUCH_AVATARS_PORT_5984_TCP_PORT` - Port of the Avatars couchdb
  * `COUCH_AVATARS_DB_NAME` - Name of the avatars database
- * `CDN_HOST` - Recommended host to GET the avatar images
  * Optional link to [users service](https://github.com/j3k0/ganomede-users)
     - `USERS_PORT_8080_TCP_ADDR` — address
     - `USERS_PORT_8080_TCP_PORT`
@@ -38,10 +37,7 @@ API
 
     {
       "type": "avatars/v1",
-      "version": "1.0.0",
-      "config": {
-        "cdn" "static.ggs.ovh"
-      }
+      "version": "1.0.0"
     }
 
 # User's avatar pictures [/avatars/v1/auth/:token/pictures]
