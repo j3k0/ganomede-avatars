@@ -3,13 +3,6 @@ sut:
     command: sh -c "wait-for-it couch_avatars:5984 && wait-for-it redis_auth:6379 && curl -X PUT -H Accept:text/plain http://couch_avatars:5984/ganomede_avatars_test && npm test"
     volumes:
      - ./wait-for-it:/usr/local/bin/wait-for-it
-     - ./src:/home/app/code/src
-     - ./tests:/home/app/code/tests
-     - ./doc:/home/app/code/doc
-     - ./Makefile:/home/app/code/Makefile
-     - ./index.js:/home/app/code/index.js
-     - ./config.js:/home/app/code/config.js
-     - ./package.json:/home/app/code/package.json
     links:
      - couch:couch_avatars
      - redis:redis_auth
