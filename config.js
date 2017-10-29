@@ -7,6 +7,11 @@ module.exports = {
   port: +process.env.PORT || 8000,
   routePrefix: process.env.ROUTE_PREFIX || pkg.api,
 
+  http: {
+    port: +process.env.PORT || 8000,
+    prefix: process.env.ROUTE_PREFIX || pkg.api,
+  },
+
   couch: {
     serverUri: url.format({
       protocol: 'http',
@@ -35,6 +40,6 @@ module.exports = {
     port: +process.env.REDIS_GAMES_PORT_6379_TCP_PORT || 6379,
     prefix: pkg.api
   }
-// COUCH_GAMES_PORT_5984_TCP_ADDR - IP of the games couchdb
-// COUCH_GAMES_PORT_5984_TCP_PORT
+  // COUCH_GAMES_PORT_5984_TCP_ADDR - IP of the games couchdb
+  // COUCH_GAMES_PORT_5984_TCP_PORT
 };

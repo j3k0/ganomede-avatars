@@ -1,26 +1,22 @@
 app:
     build: .
-    command: make BUNYAN_LEVEL=0 run
+    command: node index.js
     volumes:
-     - src:/home/app/code/src
-     - tests:/home/app/code/tests
-     - doc:/home/app/code/doc
-     - Makefile:/home/app/code/Makefile
-     - index.js:/home/app/code/index.js
-     - config.js:/home/app/code/config.js
-     - package.json:/home/app/code/package.json
+     - ./src:/home/app/code/src
+     - ./tests:/home/app/code/tests
+     - ./doc:/home/app/code/doc
+     - ./Makefile:/home/app/code/Makefile
+     - ./index.js:/home/app/code/index.js
+     - ./config.js:/home/app/code/config.js
+     - ./package.json:/home/app/code/package.json
     ports:
      - "8000:8000"
     links:
-     - couchAvatars:couch_avatars
-     - redisAuth:redis_auth
+     - couch:couch_avatars
+     - redis:redis_auth
 
-couchAvatars:
+couch:
     image: klaemo/couchdb:1.6.1
-    ports:
-     - "5984:5984"
 
-redisAuth:
-    image: tutum/redis:latest
-    environment:
-     - "REDIS_PASS=**None**"
+redis:
+    image: redis:alpine
