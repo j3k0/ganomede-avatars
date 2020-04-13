@@ -1,6 +1,6 @@
 {
   "name": "avatars",
-  "version": "1.1.4",
+  "version": "1.2.0",
   "api": "avatars/v1",
   "description": "avatars micro service",
   "private": true,
@@ -18,22 +18,22 @@
   "author": "Jean-Christophe Hoelt <hoelt@fovea.cc>",
   "license": "Private",
   "dependencies": {
+    "@kant2002/lwip": "^1.1.0",
     "authdb": "^0.2.0",
     "blanket": "^1.1.6",
-    "bunyan": "^1.2.3",
+    "bunyan": "^1.8.12",
     "coffee-script": "^1.8.0",
     "concat-stream": "^1.4.7",
     "eslint": "^4.3.0",
     "forever": "^0.15.3",
     "jshint": "^2.5.10",
-    "lwip": "0.0.9",
-    "nano": "^6.1.3",
-    "newrelic": "^2.0.1",
+    "nano": "^8.2.2",
+    "newrelic": "^2.9.1",
     "node-statsd": "^0.1.1",
-    "redis": "^2.7.1",
-    "request": "^2.55.0",
-    "restify": "^4.3.1",
-    "vasync": "^1.6.2"
+    "redis": "^2.8.0",
+    "request": "^2.88.2",
+    "restify": "^4.3.4",
+    "vasync": "^1.6.4"
   },
   "config": {
     "blanket": {

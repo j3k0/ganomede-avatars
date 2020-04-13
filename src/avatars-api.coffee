@@ -161,7 +161,7 @@ class AvatarApi
 
           console.dir({status: err})
 
-          return next(new restify.InternalServerError('hehe'))
+          return next(new restify.InternalServerError('' + err))
 
         banned = results.operations[0].result
         avatarInfo = results.operations[1].result

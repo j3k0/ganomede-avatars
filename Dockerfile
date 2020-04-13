@@ -1,6 +1,6 @@
 # Building the lwip module fails for version newer than 6.10.1
 # (tested up to node:8.2.1)
-FROM node:6.10.1
+FROM node:12
 
 EXPOSE 8000
 MAINTAINER Jean-Christophe Hoelt <hoelt@fovea.cc>

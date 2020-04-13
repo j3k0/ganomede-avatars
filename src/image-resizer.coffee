@@ -1,5 +1,5 @@
 vasync = require 'vasync'
-lwip = require 'lwip'
+lwip = require '@kant2002/lwip'
 log = require './log'
 
 LwipResizer = (buf, size, callback) ->
