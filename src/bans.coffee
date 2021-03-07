@@ -1,9 +1,10 @@
 restify = require('restify')
+jsonClientRetry = require('./json-client-retry')
 
 class RealClient
   constructor: (addr, port, log) ->
     url = "http://#{addr}:#{port}"
-    @api = restify.createJsonClient({url})
+    @api = jsonClientRetry(restify.createJsonClient({url}))
     @log = log
 
   # true if @username is banned
@@ -11,7 +12,7 @@ class RealClient
   # callback(err, boolean)
   isBanned: (username, callback) ->
     url = "/users/v1/banned-users/#{encodeURIComponent(username)}"
-    this.api.get url, (err, req, res, banInfo) =>
+    this.api.get @log, url, (err, req, res, banInfo) =>
       if (err)
         @log.error({username, err}, 'Failed to check ban info')
         return callback(err)
