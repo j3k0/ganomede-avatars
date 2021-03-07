@@ -31,6 +31,4 @@ function requestAndRetry(options, numTries = 1, maxTries = 3) {
     });
 }
 
-module.exports = {
-    jsonClientRetry: jsonClientRetry
-};
+module.exports = jsonClientRetry;
