@@ -189,11 +189,27 @@ class AvatarApi
         ],
       }, onInfo)
 
+    deleteAvatar = (req, res, next) =>
+      username = req.params.username
+      @db.delete username, (err, rev) ->
+        if (err)
+          log.error({err}, 'deleteAvatar() failed')
+          console.dir({status: err})
+          return next(new restify.InternalServerError('' + err))
+        res.send(200)
+
+
     server.post "/#{prefix}/auth/:authToken/pictures",
       authMiddleware, postAvatar
 
     server.get "/#{prefix}/:username/:size",
       getThumbnail
+
+    server.post "/#{prefix}/auth/:authToken/pictures/delete",
+      authMiddleware, deleteAvatar
+
+    server.del "/#{prefix}/auth/:authToken/pictures",
+      authMiddleware, deleteAvatar
 
 module.exports =
   create: (options = {}) -> new AvatarApi(options)

@@ -50,6 +50,28 @@ class DB
         else
           callback null
 
+  # Delete doc by its id.
+  delete: (id, callback) ->
+    log = @log
+    vasync.waterfall [
+      (cb) ->
+        @db.head id, (err, body, headers) ->
+          cb null, rev:headers?.etag?.replace(/"/g, '')
+      (body, cb) ->
+        @db.destroy id, body?.rev, (err, doc, headers) ->
+          if err
+            log.error 'Failed to delete Couch doc',
+              err: err,
+              _id: id,
+              headers: headers
+            return cb(err)
+          cb(null, body?.rev)
+    ], (err, result) ->
+      log.info "done"
+      if err
+        log.error err
+      callback err, result
+
   # Saves doc to couch
   insert: (doc, customId, callback) ->
     cb = (err, result, headers) =>

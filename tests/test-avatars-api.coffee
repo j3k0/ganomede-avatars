@@ -189,4 +189,17 @@ describe 'Avatars API', () ->
         .end(done)
       return
 
+  describe 'POST ' + endpoint('/auth/:token/pictures/delete'), () ->
+
+    it 'allows to delete the picture', (done) ->
+      go()
+        .post endpoint('/auth/alice-token/pictures/delete')
+        .expect 200
+        .end (err, res) ->
+          expect(err).to.be(null)
+          expect(res.body).to.be.an(Object)
+          expect(res.body.url).to.be(undefined)
+          done()
+      return
+
 # vim: ts=2:sw=2:et:
