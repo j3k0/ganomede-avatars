@@ -1,24 +1,25 @@
-# About
+// About
 
-os = require "os"
-pk = require "../package.json"
+import os from "os";
+import pk from "../package.json";
+import { Request, Response, Server, Next } from 'restify';
 
-about =
-  hostname: os.hostname()
-  type: pk.name
-  version: pk.version
-  description: pk.description
+const about = {
+  hostname: os.hostname(),
+  type: pk.name,
+  version: pk.version,
+  description: pk.description,
   startDate: (new Date).toISOString()
+};
 
-sendAbout = (req, res, next) ->
-  res.send about
-  next()
+const sendAbout = function (req: Request, res: Response, next: Next) {
+  res.send(about);
+  return next();
+};
 
-addRoutes = (prefix, server) ->
-  server.get "/about", sendAbout
-  server.get "/#{prefix}/about", sendAbout
+export const addRoutes = (prefix: string, server: Server) => {
+  server.get("/about", sendAbout);
+  return server.get(`/${prefix}/about`, sendAbout);
+};
 
-module.exports =
-  addRoutes: addRoutes
-
-# vim: ts=2:sw=2:et:
+// vim: ts=2:sw=2:et:

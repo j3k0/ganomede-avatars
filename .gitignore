@@ -5,3 +5,10 @@ doc/
 # (original `git add`ed manually).
 tests/image-resizer/*.png
 tests/original.png
+
+
+#build folder
+build/
+
+# TS -incremental file
+tsconfig.tsbuildinfo

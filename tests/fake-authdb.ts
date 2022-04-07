@@ -1,14 +1,20 @@
-class AuthdbClient
-  constructor: ->
-    @store = {}
-  addAccount: (token, user) ->
-    @store[token] = user
-  getAccount: (token, cb) ->
-    if !@store[token]
-      return cb "invalid authentication token"
-    cb null, @store[token]
+class AuthdbClient {
+  store: {};
+  constructor() {
+    this.store = {};
+  }
+  addAccount(token: string | number, user: any) {
+    return this.store[token] = user;
+  }
+  getAccount(token: string | number, cb: (arg0: string | null, arg1?: string) => any) {
+    if (!this.store[token]) {
+      return cb("invalid authentication token");
+    }
+    return cb(null, this.store[token]);
+  }
+}
 
-module.exports =
-  createClient: -> new AuthdbClient
-# vim: ts=2:sw=2:et:
+export default
+  { createClient() { return new AuthdbClient; } };
+// vim: ts=2:sw=2:et:
 

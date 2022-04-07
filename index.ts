@@ -1,6 +1,4 @@
-'use strict';
 
-require('coffee-script/register');
 
 // Use New Relic if LICENSE_KEY has been specified.
 if (process.env.NEW_RELIC_LICENSE_KEY) {
@@ -11,9 +9,11 @@ if (process.env.NEW_RELIC_LICENSE_KEY) {
   require('newrelic');
 }
 
-const cluster = require('cluster');
-const log = require('./src/log');
-const config = require('./config');
+import cluster from 'cluster';
+import { log } from './src/log';
+import { config } from './config';
+import { Main } from './src/main';
+import myServer from './src/server'
 
 if (cluster.isMaster) {
 
@@ -21,7 +21,7 @@ if (cluster.isMaster) {
   log.info('running with env', process.env);
   log.info('running with config', config);
   cluster.fork();
-  cluster.on('disconnect', function (worker) {
+  cluster.on('disconnect', function (worker: any) {
     log.error('disconnect!');
     cluster.fork();
   });
@@ -29,15 +29,15 @@ if (cluster.isMaster) {
 else {
 
   // worker
-  const main = require('./src/main');
-  const server = require('./src/server').createServer();
+  const main = new Main();
+  const server = myServer.createServer();
 
   // Intitialize backend, add routes
   main.initialize();
   main.addRoutes(config.routePrefix, server);
 
   // Handle uncaughtException, kill the worker
-  server.on('uncaughtException', function (req, res, route, err) {
+  server.on('uncaughtException', function (req: any, res: { send: (arg0: any) => void; }, route: any, err: { message: any; }) {
 
     // Log the error
     log.error(err);

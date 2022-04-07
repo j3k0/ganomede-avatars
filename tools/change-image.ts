@@ -1,7 +1,7 @@
 var request = require("request");
 var fs = require("fs");
 
-function loadConfig(cb) {
+function loadConfig(cb: { (config: any): void; (arg0: { host: any; port: number; }): void; }) {
     var config = {
         host: process.env.SERVER_HOST,
         port: +process.env.SERVER_PORT || 443
@@ -13,7 +13,7 @@ function loadConfig(cb) {
     cb(config);
 }
 
-function login(config, callback) {
+function login(config: { baseurl: string; username: any; password: any; }, callback: { (token: any): void; (arg0: any): void; }) {
     console.log('logging in...');
     request.post({
         uri: config.baseurl + "/users/v1/login",
@@ -23,7 +23,7 @@ function login(config, callback) {
             password: config.password
         }
     },
-    function(error, res, body) {
+    function(error: any, res: any, body: { token: string; }) {
         if (body && body.token) {
             console.log("logged in. token: " + body.token);
             callback(body.token);
@@ -38,7 +38,7 @@ function login(config, callback) {
     });
 }
 
-function post(config, callback) {
+function post(config: { token: string; baseurl: string; filename: string; }, callback: any) {
     var endpoint = '/avatars/v1/auth/' + config.token + '/pictures';
     var url = config.baseurl + endpoint;
     console.log("uploading to " + url + "...");
@@ -49,7 +49,7 @@ function post(config, callback) {
             "files": [ filestream ]
         }
     },
-    function(error, res, body) {
+    function(error: any, res: any, body: any) {
         if (error)
             console.error(error);
         if (body)
@@ -59,14 +59,14 @@ function post(config, callback) {
 }
 
 
-function changeImage(config, callback) {
-    login(config, function(token) {
+function changeImage(config: { token: any; }, callback: undefined) {
+    login(config, function(token: any) {
         config.token = token;
         post(config, callback);
     });
 }
 
-loadConfig(function(config) {
+loadConfig(function(config: { filename: any; host: any; }) {
     if (!config.filename || !config.host) {
         console.error("usage: node change-image.js <username> <password> <file>");
         console.error("       ENV: SERVER_HOST, SERVER_PORT");

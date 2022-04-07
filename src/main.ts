@@ -1,36 +1,40 @@
-log = require "./log"
-aboutApi = require "./about-api"
-pingApi = require "./ping-api"
-avatarsApi = require "./avatars-api"
-bans = require "./bans"
-api = null
+import { log } from "./log";
+import { addRoutes as addAboutApi } from "./about-api";
+import { Request, Response, Server, Next } from 'restify';
+import { addRoutes as addPingApi } from "./ping-api";
+import avatarsApi, { AvatarApi } from "./avatars-api";
+import bans from "./bans";
 
-addRoutes = (prefix, server) ->
-  log.info "adding routes to #{prefix}"
+export class Main {
+  api: AvatarApi | null;
 
-  # Platform Availability
-  pingApi.addRoutes prefix, server
+  constructor() {
+    this.api = null;
+  }
 
-  # About
-  aboutApi.addRoutes prefix, server
+  initialize(callback?: any) {
+    log.info("initializing backend");
+    const bansClient = bans.createClient(process.env);
+    this.api = avatarsApi.create({ bansClient });
+    return this.api.initialize(callback);
+  };
 
-  # Avatar
-  api.addRoutes prefix, server
+  addRoutes(prefix: string, server: Server) {
+    log.info(`adding routes to ${prefix}`);
 
-initialize = (callback) ->
-  log.info "initializing backend"
-  bansClient = bans.createClient(process.env, log)
-  api = avatarsApi.create({bansClient})
-  api.initialize callback
+    // Platform Availability
+    addPingApi(prefix, server);
 
-destroy = ->
-  log.info "destroying backend"
-  api = null
+    // About
+    addAboutApi(prefix, server);
 
-module.exports =
-  initialize: initialize
-  destroy: destroy
-  addRoutes: addRoutes
-  log: log
+    // Avatar
+    return this.api?.addRoutes(prefix, server);
+  };
 
-# vim: ts=2:sw=2:et:
+  destroy() {
+    log.info("destroying backend");
+    this.api = null;
+  };
+}
+

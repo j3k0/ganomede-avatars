@@ -1,41 +1,43 @@
-fs = require 'fs'
-path = require 'path'
-expect = require 'expect.js'
-ImageResizer = require '../../src/image-resizer'
+import fs from 'fs';
+import path from 'path';
+import expect from 'expect.js';
+import { ImageResizer } from '../../src/image-resizer';
 
-imagePath = (size) ->
-  sizePortion = if arguments.length == 1 then "-#{size}" else ''
-  return path.join(__dirname, "#{TEST_IMAGE_NAME}#{sizePortion}.png")
+const imagePath = function (size?: number) {
+  const sizePortion = arguments.length === 1 ? `-${size}` : '';
+  return path.join(__dirname, `${TEST_IMAGE_NAME}${sizePortion}.png`);
+};
 
-TEST_IMAGE_NAME = 'Yoshi'
+var TEST_IMAGE_NAME = 'Yoshi';
 
-describe 'ImageResizer', () ->
-  describe 'new ImageResizer()', () ->
-    instantiate = (resizer) ->
-      return new ImageResizer(resizer)
+describe('ImageResizer', function () {
+  describe('new ImageResizer()', function () {
+    const instantiate = (resizer: any) => new ImageResizer(resizer);
 
-    it 'creates ImageResizer', () ->
-      expect(instantiate(ImageResizer.RESIZERS.LWIP)).to.be.an(ImageResizer)
+    it('creates ImageResizer', () => expect(instantiate(ImageResizer.RESIZERS.LWIP)).to.be.an(ImageResizer));
 
-    it 'throws if no resize function is is provided', () ->
-      expect(instantiate).to.throwError()
+    return it('throws if no resize function is is provided', () => expect(instantiate).to.throwError());
+  });
 
-  describe '#resize()', () ->
-    resizer = new ImageResizer(ImageResizer.RESIZERS.LWIP)
-    image = fs.readFileSync(imagePath())
+  return describe('#resize()', function () {
+    const resizer = new ImageResizer(ImageResizer.RESIZERS.LWIP);
+    const image = fs.readFileSync(imagePath());
 
-    it 'takes in an image Buffer and resizes it to square images
-        of sizes defined in ImageResizer.SIZES', (done) ->
-      resizer.resize image, (err, result) ->
-        expect(err).to.be(null)
+    return it(`takes in an image Buffer and resizes it to square images \
+of sizes defined in ImageResizer.SIZES`, (done: () => any) => resizer.resize(image, (err: any, result?: { [x: string]: any; }) => {
+      expect(err).to.be(null);
 
-        # result should be an object:
-        #  - keys: sizes defined within ImageResizer.SIZES
-        #  - values: Buffers containing square images of that size
-        expect(result).to.be.an(Object)
-        expect(result).to.only.have.keys(ImageResizer.SIZES.map(String))
-        for size in ImageResizer.SIZES
-          expect(result[size]).to.be.a(Buffer)
-          fs.writeFileSync(imagePath(size), result[size])
+      // result should be an object:
+      //  - keys: sizes defined within ImageResizer.SIZES
+      //  - values: Buffers containing square images of that size
+      expect(result).to.be.an(Object);
+      expect(result).to.only.have.keys(ImageResizer.SIZES.map(String));
+      for (let size of Array.from(ImageResizer.SIZES)) {
+        expect(result![size]).to.be.a(Buffer);
+        fs.writeFileSync(imagePath(size), result![size]);
+      }
 
-        done()
+      return done();
+    }));
+  });
+});

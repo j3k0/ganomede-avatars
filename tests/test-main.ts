@@ -1,1 +1,1 @@
-main = require "../src/main"
+import main = require("../src/main");

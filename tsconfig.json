@@ -1,0 +1,43 @@
+{
+  "include": [
+    "index.ts",
+    "config.ts",
+    "src/**/*",
+    "tests/**/*"
+  ],
+  "ts-node": {
+    "files": true
+  },
+  "compilerOptions": {
+    "allowJs": true,
+    "outDir": "build",
+    "declaration": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "rootDir": ".",
+    "inlineSourceMap": true,
+    "strict": true,
+    "strictNullChecks": true,
+    "noImplicitAny": false,
+    "moduleResolution": "node",
+    "module": "CommonJS",
+    "resolveJsonModule": true,
+    "noUnusedLocals": false,
+    "skipLibCheck": true,
+    "removeComments": false,
+    "lib": [
+      "es2019"
+    ],
+    "target": "es2019",
+    "typeRoots": [
+      // "./@types",
+      "node_modules/@types"
+    ],
+    "paths": {
+      // "ganomede-base-client": ["./@types/ganomede-base-client"]
+    }
+  },
+  "exclude": [
+    "./@types/**"
+  ],
+}
