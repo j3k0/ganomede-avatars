@@ -58,7 +58,7 @@ else {
       // Let the master know we're dead.  This will trigger a
       // 'disconnect' in the cluster master, and then it will fork
       // a new worker.
-      cluster.worker.disconnect();
+      cluster.worker?.disconnect();
 
       const InternalError = require('restify').InternalError;
       res.send(new InternalError(err, err.message || 'unexpected error'));

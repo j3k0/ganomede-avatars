@@ -1,5 +1,6 @@
 import vasync from 'vasync';
-import lwip from '@kant2002/lwip';
+// import lwip from '@kant2002/lwip';
+// use https://github.com/lovell/sharp
 import { log } from './log';
 
 const LwipResizer = (buf: any, size: any, callback: (arg0: any, arg1?: any) => any) => lwip.open(buf, 'png', function (err: any, image: { resize: (arg0: any, arg1: any, arg2: (err: any, resizedImage: any) => any) => any; }) {

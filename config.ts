@@ -39,21 +39,22 @@ export const config = {
     designName: 'avatar'
   },
 
-  rules: {
-    host: process.env.RULES_PORT_8080_TCP_ADDR || 'localhost',
-    port: +(process.env.RULES_PORT_8080_TCP_PORT || 8080)
-  },
+  // rules: {
+  //   host: process.env.RULES_PORT_8080_TCP_ADDR || 'localhost',
+  //   port: +(process.env.RULES_PORT_8080_TCP_PORT || 8080)
+  // },
 
   authdb: {
     host: process.env.REDIS_AUTH_PORT_6379_TCP_ADDR || 'localhost',
     port: +(process.env.REDIS_AUTH_PORT_6379_TCP_PORT || 6379)
   },
 
-  redis: {
-    host: process.env.REDIS_GAMES_PORT_6379_TCP_ADDR || 'localhost',
-    port: +(process.env.REDIS_GAMES_PORT_6379_TCP_PORT || 6379),
-    prefix: pkg.api
-  }
+  // redis: {
+  //   host: process.env.REDIS_GAMES_PORT_6379_TCP_ADDR || 'localhost',
+  //   port: +(process.env.REDIS_GAMES_PORT_6379_TCP_PORT || 6379),
+  //   prefix: pkg.api
+  // }
+
   // COUCH_GAMES_PORT_5984_TCP_ADDR - IP of the games couchdb
   // COUCH_GAMES_PORT_5984_TCP_PORT
 };
