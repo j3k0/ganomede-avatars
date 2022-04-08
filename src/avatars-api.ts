@@ -78,7 +78,7 @@ export class AvatarApi {
 
     const couchBase = `${config.couch.serverUri}/${config.couch.name}`;
 
-    const resizer = new ImageResizer(ImageResizer.RESIZERS.LWIP);
+    const resizer = new ImageResizer(ImageResizer.RESIZERS.SHARP);
 
     // POST /pictures
     const postAvatar = (req: Request, res: Response, next: NextFunction) => {

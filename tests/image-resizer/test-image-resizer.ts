@@ -14,13 +14,13 @@ describe('ImageResizer', function () {
   describe('new ImageResizer()', function () {
     const instantiate = (resizer: any) => new ImageResizer(resizer);
 
-    it('creates ImageResizer', () => expect(instantiate(ImageResizer.RESIZERS.LWIP)).to.be.an(ImageResizer));
+    it('creates ImageResizer', () => expect(instantiate(ImageResizer.RESIZERS.SHARP)).to.be.an(ImageResizer));
 
     return it('throws if no resize function is is provided', () => expect(instantiate).to.throwError());
   });
 
   return describe('#resize()', function () {
-    const resizer = new ImageResizer(ImageResizer.RESIZERS.LWIP);
+    const resizer = new ImageResizer(ImageResizer.RESIZERS.SHARP);
     const image = fs.readFileSync(imagePath());
 
     return it(`takes in an image Buffer and resizes it to square images \
