@@ -1,25 +1,37 @@
-app:
-    build: .
-    command: sh -c "wait-for-it couch_avatars:5984 redis_auth:6379 && curl http://couch_avatars/$COUCH_AVATARS_DB_NAME -X PUT && node index.js"
-    volumes:
-     - ./wait-for-it:/usr/local/bin/wait-for-it
-     - ./src:/home/app/code/src
-     - ./tests:/home/app/code/tests
-     - ./doc:/home/app/code/doc
-     - ./Makefile:/home/app/code/Makefile
-     - ./index.js:/home/app/code/index.js
-     - ./config.js:/home/app/code/config.js
-     - ./package.json:/home/app/code/package.json
-    ports:
-     - "8000:8000"
-    links:
-     - couch:couch_avatars
-     - redis:redis_auth
-    env:
-     - COUCH_AVATARS_DB_NAME=ganomede_avatars
+---
+version: '3.0'
+services:
+  app:
+      build: .
+      command: sh -c "wait-for-it couch:5984 redis:6379 && sleep 1 && curl http://admin:password@couch:5984/ganomede_avatars -X PUT && node build/index.js"
+      volumes:
+       - ./wait-for-it:/usr/local/bin/wait-for-it
+       - ./src:/home/app/code/src
+       - ./tests:/home/app/code/tests
+       - ./doc:/home/app/code/doc
+       - ./Makefile:/home/app/code/Makefile
+       - ./index.js:/home/app/code/index.js
+       - ./config.js:/home/app/code/config.js
+       - ./package.json:/home/app/code/package.json
+      ports:
+       - "8524:8000"
+      links:
+       - couch:couch
+       - redis:redis
+      environment:
+       - COUCH_AVATARS_DB_NAME=ganomede_avatars
+       - COUCH_AVATARS_PORT_5984_TCP_AUTH=admin:password
+       - COUCH_AVATARS_PORT_5984_TCP_ADDR=couch
+       - COUCH_AVATARS_PORT_5984_TCP_PORT=5984
+       - REDIS_AUTH_PORT_6379_TCP_ADDR=redis
+       - REDIS_AUTH_PORT_6379_TCP_PORT=6379
+       - API_SECRET=12345678
 
-couch:
-    image: klaemo/couchdb:1.6.1
+  couch:
+      image: couchdb:3.2.1
+      environment:
+        - COUCHDB_USER=admin
+        - COUCHDB_PASSWORD=password
 
-redis:
-    image: redis:alpine
+  redis:
+      image: redis:alpine
