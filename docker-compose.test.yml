@@ -8,8 +8,16 @@ services:
       volumes:
         - ./wait-for-it:/usr/local/bin/wait-for-it
       links:
-        - couch:couch
-        - redis:redis
+        - couch
+        - redis
+      environment:
+       - COUCH_AVATARS_DB_NAME=ganomede_avatars
+       - COUCH_AVATARS_PORT_5984_TCP_AUTH=admin:password
+       - COUCH_AVATARS_PORT_5984_TCP_ADDR=couch
+       - COUCH_AVATARS_PORT_5984_TCP_PORT=5984
+       - REDIS_AUTH_PORT_6379_TCP_ADDR=redis
+       - REDIS_AUTH_PORT_6379_TCP_PORT=6379
+       - API_SECRET=12345678
   app:
       build: .
       command: sh -c "wait-for-it couch:5984 redis:6379 && sleep 1 && curl http://admin:password@couch:5984/ganomede_avatars -X PUT && node build/index.js"
@@ -25,8 +33,8 @@ services:
       ports:
        - "8524:8000"
       links:
-       - couch:couch
-       - redis:redis
+       - couch
+       - redis
       environment:
        - COUCH_AVATARS_DB_NAME=ganomede_avatars
        - COUCH_AVATARS_PORT_5984_TCP_AUTH=admin:password

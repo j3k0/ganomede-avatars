@@ -2,13 +2,14 @@
   "name": "tools",
   "version": "0.0.0",
   "description": "",
-  "main": "change-image.js",
+  "main": "change-image.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "request": "^2.58.0"
+    "request": "^2.58.0",
+    "ts-node": "^10.7.0"
   }
 }

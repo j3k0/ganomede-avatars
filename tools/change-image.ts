@@ -1,19 +1,43 @@
-var request = require("request");
-var fs = require("fs");
+const request = require("request");
+const fs = require("fs");
 
-function loadConfig(cb: { (config: any): void; (arg0: { host: any; port: number; }): void; }) {
-    var config = {
+export type Config = {
+  protocol: string;
+  host: string;
+  port: number;
+  filename: string;
+  baseurl: string;
+} & ({
+  username: string;
+  password: string;
+} | {
+  token: string;
+});
+
+// export type ConfigWithToken = Config & {
+//   token?: string;
+// }
+
+function loadConfig(cb: (config: Config) => void) {
+    let config:any = {
+        protocol: process.env.SERVER_PROTOCOL || 'https',
         host: process.env.SERVER_HOST,
-        port: +process.env.SERVER_PORT || 443
+        port: +(process.env.SERVER_PORT || '443')
     };
-    config.username = process.argv[2];
-    config.password = process.argv[3];
+    if (process.argv[2] === "token") {
+      config.token = process.argv[3];
+    }
+    else {
+      config.username = process.argv[2];
+      config.password = process.argv[3];
+    }
     config.filename = process.argv[4];
-    config.baseurl = "https://" + config.host + (config.port != 443 ? ':' + config.port : '');
+    config.baseurl = config.protocol + "://" + config.host + (config.port != 443 ? ':' + config.port : '');
     cb(config);
 }
 
-function login(config: { baseurl: string; username: any; password: any; }, callback: { (token: any): void; (arg0: any): void; }) {
+function login(config: Config, callback: (token: string) => void) {
+    if ('token' in config) return callback(config.token);
     console.log('logging in...');
     request.post({
         uri: config.baseurl + "/users/v1/login",
@@ -38,12 +62,13 @@ function login(config: { baseurl: string; username: any; password: any; }, callb
     });
 }
 
-function post(config: { token: string; baseurl: string; filename: string; }, callback: any) {
+function post(config: Config) {
+    if (!('token' in config)) return;
     var endpoint = '/avatars/v1/auth/' + config.token + '/pictures';
     var url = config.baseurl + endpoint;
     console.log("uploading to " + url + "...");
     var filestream = fs.createReadStream(__dirname + "/" + config.filename);
-    var webstream = request.post({
+    /* var webstream = */ request.post({
         uri: url,
         formData: {
             "files": [ filestream ]
@@ -59,14 +84,14 @@ function post(config: { token: string; baseurl: string; filename: string; }, cal
 }
 
 
-function changeImage(config: { token: any; }, callback: undefined) {
+function changeImage(config: Config) {
     login(config, function(token: any) {
-        config.token = token;
-        post(config, callback);
+        const configWT: Config = {...config, token};
+        post(configWT);
     });
 }
 
-loadConfig(function(config: { filename: any; host: any; }) {
+loadConfig(function(config: Config) {
     if (!config.filename || !config.host) {
         console.error("usage: node change-image.js <username> <password> <file>");
         console.error("       ENV: SERVER_HOST, SERVER_PORT");
