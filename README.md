@@ -72,3 +72,11 @@ Will:
 ### response [200] OK
 
 Content-type: image/png
+
+## Delete [DELETE]
+
+Delete the users' avatar picture from the database.
+
+Alternatively, you can use `POST /avatars/v1/auth/:token/pictures/delete` on clients that do not support the DELETE method.
+
+### response [200] OK
